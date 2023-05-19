@@ -1,19 +1,29 @@
 import React from 'react';
 
-function Track({ id, name, artist, album, duration, uri, onAddTrack, onRemoveTrack, isRemoval }) {
+function Track({ id, cover, name, artist, album, duration, uri, onAddTrack, onRemoveTrack, isRemoval }) {
+  const handleAddTrack = () => {
+    // Call the add track method in the parent component
+    onAddTrack({ id, name, artist, album, duration, uri });
+  };
 
-  // Render the component with the props
+  const handleRemoveTrack = () => {
+    // Call the remove track method in the parent component
+    onRemoveTrack({ id, name, artist, album, duration, uri });
+  };
+
+  // Render the component with the appropriate button based on the isRemoval prop
   return (
-    <div className="Track">
-      <div className="Track-information">
-        <h3>{name}</h3>
-        <p>{artist} | {album}</p>
+    <div className="track artist__info">
+      <div>
+        <h3 className="artist__info__name">{name}</h3>
+        <p className="artist__info__details">{artist} | {album}</p>
+        <img src={cover} alt="Cover" className="track__cover" />
       </div>
-      <div className="Track-action">
+      <div className="track_added artist__info__actions">
         {isRemoval ? (
-          <button onClick={() => onRemoveTrack({ id, name, artist, album, duration, uri })}>-</button>
+          <button className="artist__info__actions__button" onClick={handleRemoveTrack}>-</button>
         ) : (
-          <button onClick={() => onAddTrack({ id ,name, artist, album, duration, uri })}>+</button>
+          <button className="artist__info__actions__button" onClick={handleAddTrack}>+</button>
         )}
       </div>
     </div>

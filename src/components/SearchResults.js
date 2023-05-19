@@ -7,20 +7,21 @@ function SearchResults({ searchResults, onAddTrack }) {
     return <div>No results found.</div>;
   }
 
-  // Render the component with searchResults
   return (
     <div>
-      <h2>Search Results</h2>
+      <div>Search Results</div>
+
       {searchResults.map((track) => (
         <Track
           key={track.id}
           name={track.name}
           artist={track.artists?.[0]?.name || ''}
-          //artist={track.artists && track.artists.length > 0 ? track.artists[0].name : ''}
           album={track.album.name}
           duration={track.duration_ms}
+          cover={track.album.images?.[0]?.url}
           uri={track.uri}
           onAddTrack={onAddTrack}
+          isRemoval={false} // Set isRemoval prop to false since it's not a removal operation
         />
       ))}
     </div>

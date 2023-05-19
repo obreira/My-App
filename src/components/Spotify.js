@@ -32,13 +32,14 @@ const Spotify = {
   
     // Make a Spotify API request with the user's access token
     async search(query, type) {
-      const accessToken = this.getAccessToken();
-      const endpoint = `https://api.spotify.com/v1/search?q=${query}&type=${type}`;
-  
       try {
+        const accessToken = await this.getAccessToken(); // Await the getAccessToken promise
+        const endpoint = `https://api.spotify.com/v1/search?q=${query}&type=${type}`;
+    
         const response = await fetch(endpoint, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
+    
         if (response.ok) {
           const jsonResponse = await response.json();
           if (jsonResponse[type + 's']) {

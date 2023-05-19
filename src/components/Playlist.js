@@ -1,15 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
 import Track from './Track';
 
-const Playlist = ({ playlistName = 'Playlist Name', playlistTracks = [], onRemove = () => {} }) => {
-  if (!playlistTracks || !Array.isArray(playlistTracks)) {
-    playlistTracks = [];
-  }
+const Playlist = ({ playlistName, playlistTracks, onRemove, onRenamePlaylist, onRemoveTrack }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [newPlaylistName, setNewPlaylistName] = useState(playlistName);
+
+  const handlePlaylistNameChange = (e) => {
+    setNewPlaylistName(e.target.value);
+  };
+
+  const handlePlaylistNameEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handlePlaylistNameSave = () => {
+    setIsEditing(false);
+    // Pass the new playlist name to the parent component
+    onRenamePlaylist(newPlaylistName);
+  };
 
   return (
-    <div className="playlist">
-      <h2>{playlistName}</h2>
-      <div className="tracklist">
+    <div>
+      {isEditing ? (
+        <input
+          type="text"
+          value={newPlaylistName}
+          onChange={handlePlaylistNameChange}
+          onBlur={handlePlaylistNameSave}
+          autoFocus
+        />
+      ) : (
+        <span onClick={handlePlaylistNameEdit}>
+          <FontAwesomeIcon icon={faEdit} className="edit-icon" />
+          {playlistName}
+        </span>
+      )}
+
+      <div className="section_main">
         {playlistTracks.map((track) => (
           <Track
             key={track.id}
@@ -17,14 +46,15 @@ const Playlist = ({ playlistName = 'Playlist Name', playlistTracks = [], onRemov
             artist={track.artist}
             album={track.album}
             duration={track.duration}
+            cover={track.album.images?.[0]?.url}
             uri={track.uri}
-            onRemoveTrack={onRemove}
+            onRemoveTrack={onRemove} // Pass the function as a prop
             isRemoval={true}
           />
         ))}
       </div>
     </div>
   );
-}
+};
 
 export default Playlist;

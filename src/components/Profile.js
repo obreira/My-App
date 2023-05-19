@@ -1,12 +1,20 @@
 import React from 'react';
 
-function Profile({ name, age, email }) {
+function Profile({ name, last_name }) {
   return (
-    <div>
-      <h2>Profile</h2>
-      <p>Name: {name}</p>
-      <p>Age: {age}</p>
-      <p>Email: {email}</p>
+    <div className="user">
+      <div className="user__notifications">
+        <i className="ion-android-notifications"></i>
+      </div>
+    
+      <div className="user__info">
+                     
+        <span className="user__info__name">
+          <span className="first">{name}</span>
+          {' '}
+          <span className="last">{last_name}</span>
+          </span>
+      </div>
     </div>
   );
 }
