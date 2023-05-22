@@ -4,8 +4,8 @@ import SearchResults from './components/SearchResults';
 import Playlist from './components/Playlist';
 import ProfileForm from './components/ProfileForm';
 import Profile from './components/Profile';
-import Spotify from './components/Spotify'; // Replace with the correct path to the Spotify module
-import Dropdown from './components/Dropdown'; // Import the Dropdown component
+import Spotify from './components/Spotify';
+import SpotifyPlayer from 'react-spotify-web-playback';// Replace with the correct path to the Spotify module
 import './App.scss';
 
 function App() {
@@ -16,6 +16,7 @@ function App() {
   const [profile, setProfile] = useState(null);
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [createdPlaylists, setCreatedPlaylists] = useState([]);
+  const [currentTrack, setCurrentTrack] = useState(null);
 
   useEffect(() => {
     Spotify.getAccessToken().then((accessToken) => {
@@ -34,16 +35,16 @@ function App() {
         const isTrackInPlaylist = playlistToUpdate.tracks.some(
           (playlistTrack) => playlistTrack.uri === track.uri
         );
-  
+
         if (!isTrackInPlaylist) {
           const updatedPlaylist = {
             ...playlistToUpdate,
             tracks: [...playlistToUpdate.tracks, track],
           };
-  
+
           const updatedPlaylists = [...createdPlaylists];
           updatedPlaylists[playlistIndex] = updatedPlaylist;
-  
+
           setCreatedPlaylists(updatedPlaylists);
           setSelectedPlaylist(updatedPlaylist);
         }
@@ -52,25 +53,26 @@ function App() {
       const isTrackInPlaylist = playlistTracks.some(
         (playlistTrack) => playlistTrack.uri === track.uri
       );
-  
+
       if (!isTrackInPlaylist) {
         setPlaylistTracks((prevTracks) => [...prevTracks, track]);
       }
     }
   };
-  
-
-
 
   const removeTrackFromPlaylist = (track) => {
     if (selectedPlaylist) {
       const updatedPlaylist = {
         ...selectedPlaylist,
-        tracks: selectedPlaylist.tracks.filter((playlistTrack) => playlistTrack.uri !== track.uri),
+        tracks: selectedPlaylist.tracks.filter(
+          (playlistTrack) => playlistTrack.uri !== track.uri
+        ),
       };
       setSelectedPlaylist(updatedPlaylist);
     } else {
-      setPlaylistTracks((prevTracks) => prevTracks.filter((prevTrack) => prevTrack.uri !== track.uri));
+      setPlaylistTracks((prevTracks) =>
+        prevTracks.filter((prevTrack) => prevTrack.uri !== track.uri)
+      );
     }
   };
 
@@ -79,17 +81,41 @@ function App() {
   };
 
   const savePlaylist = () => {
-    const trackUris = playlistTracks.map((track) => track.uri);
-    // Call the Spotify API to save the playlist
-    Spotify.savePlaylist(playlistName, trackUris).then(() => {
-      console.log('Playlist saved to Spotify!');
-      setPlaylistTracks([]); // Reset the playlist in the app
+    // Step 1: Obtain an access token for the user
+    Spotify.getAccessToken().then((accessToken) => {
+      // Step 2: Create a new playlist on the user's Spotify account
+      Spotify.createPlaylist(playlistName).then((playlistId) => {
+        const trackUris = playlistTracks.map((track) => track.uri);
+
+        // Step 3: Add the tracks to the newly created playlist
+        Spotify.addTracksToPlaylist(playlistId, trackUris).then(() => {
+          console.log('Playlist saved to Spotify!');
+          setPlaylistTracks([]); // Reset the playlist in the app
+        });
+      });
     });
   };
 
   const handleRenamePlaylist = (newName) => {
-    setPlaylistName(newName);
+    if (selectedPlaylist) {
+      const updatedPlaylist = {
+        ...selectedPlaylist,
+        name: newName,
+      };
+      const playlistIndex = createdPlaylists.findIndex(
+        (playlist) => playlist.name === selectedPlaylist.name
+      );
+      if (playlistIndex !== -1) {
+        const updatedPlaylists = [...createdPlaylists];
+        updatedPlaylists[playlistIndex] = updatedPlaylist;
+        setCreatedPlaylists(updatedPlaylists);
+        setSelectedPlaylist(updatedPlaylist);
+      }
+    } else {
+      setPlaylistName(newName);
+    }
   };
+  
 
   const handleSelectPlaylist = (playlistIndex) => {
     const playlist = createdPlaylists[playlistIndex];
@@ -107,6 +133,17 @@ function App() {
     setSearchResults([]);
   };
 
+  const handleLoginWithSpotify = () => {
+    Spotify.login();
+  };
+
+
+
+  const handlePlayTrack = (track) => {
+    setCurrentTrack(track);
+  };
+
+
   return (
     <>
       <header className="header">
@@ -116,27 +153,30 @@ function App() {
 
         <div className="user">
           <div className="user_info">
-            {profile ? (
-              <Profile name={profile.name} last_name={profile.last_name} />
-            ) : (
-              <ProfileForm createProfile={createProfile} />
-            )}
+
+            <div>
+              <ProfileForm createProfile={handleLoginWithSpotify} />
+
+            </div>
+
           </div>
         </div>
       </header>
       <section className="content">
         <div className="content__left">
           <div className="navigation">
-            <div className='navigation__list'>
-              <div class="navigation__list__header"
+            <div className="navigation__list">
+              <div
+                className="navigation__list__header"
                 role="button"
                 data-toggle="collapse"
                 href="#main"
                 aria-expanded="true"
-                aria-controls="main">
+                aria-controls="main"
+              >
                 Main
               </div>
-              <div class="collapse in" id="main">
+              <div className="collapse in" id="main">
                 <span className="navigation__list__item" onClick={handleCreatePlaylist}>
                   Create Playlist
                 </span>
@@ -154,47 +194,35 @@ function App() {
           </div>
         </div>
 
-
-        <div class="content__middl">
-
-          <div class="artist">
-
-            <div>
+        <div className="content__middle">
+          <div className="artist">
+            <div className='tracks'>
               {searchResults.length > 0 ? (
-                <div className='playlist'>
+                <div className="">
                   <SearchResults
                     searchResults={searchResults}
-                    onAddTrack={(track, playlistIndex) => addTrackToPlaylist(track, playlistIndex)}
+                    onAddTrack={addTrackToPlaylist}
                   />
                 </div>
               ) : (
-                <div class="playlist">
-                  {selectedPlaylist ? (
-                    <Playlist
-                      playlistName={selectedPlaylist.name}
-                      playlistTracks={selectedPlaylist.tracks}
-                      onRemove={removeTrackFromPlaylist}
-                      onRenamePlaylist={handleRenamePlaylist}
-                      onSavePlaylist={savePlaylist}
-                    />
-                  ) : (
-                    <Playlist
-                      playlistName={playlistName}
-                      playlistTracks={playlistTracks}
-                      onRemove={removeTrackFromPlaylist}
-                      onRenamePlaylist={handleRenamePlaylist}
-                      onSavePlaylist={savePlaylist}
-                    />
-                  )}
+                <div className="tracks">
+                  <Playlist
+                    playlistName={selectedPlaylist ? selectedPlaylist.name : playlistName}
+                    playlistTracks={selectedPlaylist ? selectedPlaylist.tracks : playlistTracks}
+                    onRemove={removeTrackFromPlaylist}
+                    onRenamePlaylist={handleRenamePlaylist}
+                    onSavePlaylist={savePlaylist}
+                    onPlayTrack={handlePlayTrack} // Add this line
+                  />
                 </div>
-
-
               )}
-
             </div>
           </div>
         </div>
       </section>
+      <footer className="footer">
+        <SpotifyPlayer token={Spotify.getAccessToken} uris={currentTrack ? [currentTrack.uri] : []} />
+      </footer>
     </>
   );
 }

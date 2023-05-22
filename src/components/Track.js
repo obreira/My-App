@@ -1,23 +1,26 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlay } from '@fortawesome/free-solid-svg-icons';
 
-function Track({ id, cover, name, artist, album, duration, uri, onAddTrack, onRemoveTrack, isRemoval }) {
+const Track = ({ id, cover, name, artist, album, duration, uri, onAddTrack, onRemoveTrack, onPlayTrack, isRemoval }) => {
   const handleAddTrack = () => {
-    // Call the add track method in the parent component
     onAddTrack({ id, name, artist, album, duration, uri });
   };
 
   const handleRemoveTrack = () => {
-    // Call the remove track method in the parent component
     onRemoveTrack({ id, name, artist, album, duration, uri });
   };
 
-  // Render the component with the appropriate button based on the isRemoval prop
+  const handlePlayTrack = () => {
+    onPlayTrack({ id, name, artist, album, duration, uri });
+  };
+
   return (
     <div className="track artist__info">
       <div>
-        <h3 className="artist__info__name">{name}</h3>
-        <p className="artist__info__details">{artist} | {album}</p>
-        <img src={cover} alt="Cover" className="track__cover" />
+     
+        <p className="artist__info__details"><h3 className="artist__info__name">{name}</h3>{artist} | {album} | {duration} </p> <img src={cover} alt="Cover" className="img" />
+        
       </div>
       <div className="track_added artist__info__actions">
         {isRemoval ? (
@@ -26,8 +29,8 @@ function Track({ id, cover, name, artist, album, duration, uri, onAddTrack, onRe
           <button className="artist__info__actions__button" onClick={handleAddTrack}>+</button>
         )}
       </div>
-    </div>
+      </div>
   );
-}
+};
 
 export default Track;

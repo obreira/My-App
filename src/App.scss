@@ -56,6 +56,20 @@ body {
   
 }
 
+.img{
+  //an image with 60px by 600px and enlarged when hovered
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  transition: all 0.5s ease;
+  &:hover {
+    width: 70px;
+    height: 70px;
+    transition: all 0.5s ease;
+  }
+
+
+}
 .section_main{
   //i want to create a section that will contain the main content of the page to be fixed and scrollable width 2 collums one for the nav bar and one for the main content
   width: 100%;
@@ -488,37 +502,36 @@ body {
   & {
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-around;
-  align-items: center;
-  text-align: center;
+  justify-content: start;
+  align-items: start;
+  text-align: left;
   margin-top: 20px;
   margin-bottom: 20px;
   margin-left: 50px;
   font-weight: bold;
-  color: $black;
-  background: $green;
+  color: $green;
+  background: $light-black;
   border-radius: 10px;
   padding: $padding;
   width: auto;
   height: 50px;
-  border: 1px solid #fff;
-  box-shadow: 0 0 10px #fff;
+    font-size: 20px;
+  }
+
+
+  
+}
+.tracks {
+  background-color: $light-black;
+  color: $green;
   transition: all 0.5s ease;
-  font-size: 40px;
-  }
-  
-  &:hover {
-    background-color: $black;
-    color: $green;
-    border: 1px solid #000;
-    box-shadow: 0 0 10px #000;
-    transition: all 0.5s ease;
-    cursor: pointer;
-    background: lighten( $light-black, 10% );
-    
-  }
-  
-  
+  cursor: pointer;
+  align-items: start;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  font-size: 30px;
+
 }
 
   @media (max-width: 768px) {
@@ -869,7 +882,7 @@ body {
 
 .artist {
   
-  height: 700px;
+  height: 800px;
   overflow-y:scroll;
   width:1400px;
   justify-content:space-around;
@@ -1255,7 +1268,7 @@ body {
     
   }
 
-.tracks {
+.trackss {
   
   & {
     display: flex;

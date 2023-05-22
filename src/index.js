@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import $ from 'jquery';
 
+
+
 const setHeights = () => {
   const totalHeight = $(window).height();
   const headerHeight = $('.header').outerHeight();
@@ -57,5 +59,6 @@ const Root = () => {
     </React.StrictMode>
   );
 };
+
 
 ReactDOM.render(<Root />, document.getElementById('root'));

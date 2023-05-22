@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
 import Track from './Track';
 
-const Playlist = ({ playlistName, playlistTracks, onRemove, onRenamePlaylist, onRemoveTrack }) => {
+const Playlist = ({ playlistName, playlistTracks, onRemove, onRenamePlaylist, onRemoveTrack, onPlayTrack }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newPlaylistName, setNewPlaylistName] = useState(playlistName);
 
@@ -21,6 +21,17 @@ const Playlist = ({ playlistName, playlistTracks, onRemove, onRenamePlaylist, on
     onRenamePlaylist(newPlaylistName);
   };
 
+  const handlePlayTrack = (track) => {
+    onPlayTrack(track);
+  };
+
+  const handleBlur = () => {
+    if (newPlaylistName.trim() === '') {
+      setNewPlaylistName(playlistName); // Revert to the original name if it's empty
+    }
+    handlePlaylistNameSave();
+  };
+
   return (
     <div>
       {isEditing ? (
@@ -28,7 +39,7 @@ const Playlist = ({ playlistName, playlistTracks, onRemove, onRenamePlaylist, on
           type="text"
           value={newPlaylistName}
           onChange={handlePlaylistNameChange}
-          onBlur={handlePlaylistNameSave}
+          onBlur={handleBlur}
           autoFocus
         />
       ) : (
@@ -38,21 +49,24 @@ const Playlist = ({ playlistName, playlistTracks, onRemove, onRenamePlaylist, on
         </span>
       )}
 
-      <div className="section_main">
+      <ol>
         {playlistTracks.map((track) => (
-          <Track
-            key={track.id}
-            name={track.name}
-            artist={track.artist}
-            album={track.album}
-            duration={track.duration}
-            cover={track.album.images?.[0]?.url}
-            uri={track.uri}
-            onRemoveTrack={onRemove} // Pass the function as a prop
-            isRemoval={true}
-          />
+          <li key={track.id}>
+            <Track
+              name={track.name}
+              artist={track.artist}
+              album={track.album}
+              duration={track.duration}
+              cover={track.album.images?.[0]?.url}
+              uri={track.uri}
+              onAddTrack={() => {}} // Not needed in the Playlist component
+              onRemoveTrack={onRemove} // Pass the function as a prop
+              onPlayTrack={() => handlePlayTrack(track)} // Pass the function as a prop
+              isRemoval={true}
+            />
+          </li>
         ))}
-      </div>
+      </ol>
     </div>
   );
 };
