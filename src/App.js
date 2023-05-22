@@ -3,10 +3,10 @@ import SearchBar from './components/SearchBar';
 import SearchResults from './components/SearchResults';
 import Playlist from './components/Playlist';
 import ProfileForm from './components/ProfileForm';
-import Profile from './components/Profile';
 import Spotify from './components/Spotify';
-import SpotifyPlayer from 'react-spotify-web-playback';// Replace with the correct path to the Spotify module
+import SpotifyPlayer from 'react-spotify-web-playback';
 import './App.scss';
+
 
 function App() {
   const [searchResults, setSearchResults] = useState([]);
@@ -17,11 +17,13 @@ function App() {
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [createdPlaylists, setCreatedPlaylists] = useState([]);
   const [currentTrack, setCurrentTrack] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [accessToken, setAccessToken] = useState('');
+
 
   useEffect(() => {
-    Spotify.getAccessToken().then((accessToken) => {
-      // Use the access token for API requests or other operations
-      console.log('Access Token:', accessToken);
+    Spotify.getAccessToken().then((token) => {
+      setAccessToken(token);
     });
   }, []);
 
@@ -53,9 +55,10 @@ function App() {
       const isTrackInPlaylist = playlistTracks.some(
         (playlistTrack) => playlistTrack.uri === track.uri
       );
-
+  
       if (!isTrackInPlaylist) {
         setPlaylistTracks((prevTracks) => [...prevTracks, track]);
+        setPreviewUrl(track.preview_url); // Update this line
       }
     }
   };
@@ -81,16 +84,12 @@ function App() {
   };
 
   const savePlaylist = () => {
-    // Step 1: Obtain an access token for the user
     Spotify.getAccessToken().then((accessToken) => {
-      // Step 2: Create a new playlist on the user's Spotify account
       Spotify.createPlaylist(playlistName).then((playlistId) => {
         const trackUris = playlistTracks.map((track) => track.uri);
-
-        // Step 3: Add the tracks to the newly created playlist
         Spotify.addTracksToPlaylist(playlistId, trackUris).then(() => {
           console.log('Playlist saved to Spotify!');
-          setPlaylistTracks([]); // Reset the playlist in the app
+          setPlaylistTracks([]);
         });
       });
     });
@@ -115,12 +114,11 @@ function App() {
       setPlaylistName(newName);
     }
   };
-  
 
   const handleSelectPlaylist = (playlistIndex) => {
     const playlist = createdPlaylists[playlistIndex];
     setSelectedPlaylist(playlist);
-    setSearchResults([]); // Reset the search results
+    setSearchResults([]);
   };
 
   const handleCreatePlaylist = () => {
@@ -138,11 +136,9 @@ function App() {
   };
 
 
-
   const handlePlayTrack = (track) => {
     setCurrentTrack(track);
   };
-
 
   return (
     <>
@@ -153,12 +149,9 @@ function App() {
 
         <div className="user">
           <div className="user_info">
-
             <div>
               <ProfileForm createProfile={handleLoginWithSpotify} />
-
             </div>
-
           </div>
         </div>
       </header>
@@ -202,6 +195,8 @@ function App() {
                   <SearchResults
                     searchResults={searchResults}
                     onAddTrack={addTrackToPlaylist}
+                    onPlayTrack={handlePlayTrack}
+                    previewUrl={previewUrl}
                   />
                 </div>
               ) : (
@@ -212,7 +207,7 @@ function App() {
                     onRemove={removeTrackFromPlaylist}
                     onRenamePlaylist={handleRenamePlaylist}
                     onSavePlaylist={savePlaylist}
-                    onPlayTrack={handlePlayTrack} // Add this line
+                    onPlayTrack={handlePlayTrack}
                   />
                 </div>
               )}
@@ -221,7 +216,17 @@ function App() {
         </div>
       </section>
       <footer className="footer">
-        <SpotifyPlayer token={Spotify.getAccessToken} uris={currentTrack ? [currentTrack.uri] : []} />
+       
+        {currentTrack && (
+          <div className="playlist">
+                     
+            <div className="current-track-info__details">
+              
+              <h2> Playing - {currentTrack.name} | {currentTrack.artist}  | {currentTrack.album}  </h2>
+             
+          </div>
+          </div>
+        )}
       </footer>
     </>
   );

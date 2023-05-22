@@ -59,6 +59,7 @@ const Playlist = ({ playlistName, playlistTracks, onRemove, onRenamePlaylist, on
               duration={track.duration}
               cover={track.album.images?.[0]?.url}
               uri={track.uri}
+              previewUrl={track.preview_url}
               onAddTrack={() => {}} // Not needed in the Playlist component
               onRemoveTrack={onRemove} // Pass the function as a prop
               onPlayTrack={() => handlePlayTrack(track)} // Pass the function as a prop

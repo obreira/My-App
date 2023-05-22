@@ -8,7 +8,7 @@ const Spotify = {
     const scope = 'playlist-modify-public';
     window.location = `https://accounts.spotify.com/authorize?client_id=${this.clientId}&response_type=token&scope=${scope}&redirect_uri=${redirectUri}`;
   },
-  
+
   getAccessToken() {
     if (this.accessToken) {
       return Promise.resolve(this.accessToken);
@@ -36,31 +36,32 @@ const Spotify = {
     }
   },
 
-  search(query, type) {
-    return fetch(`https://api.spotify.com/v1/search?q=${query}&type=${type}`, {
-      headers: { Authorization: `Bearer ${this.accessToken}` },
+ search(query, type) {
+  return fetch(`https://api.spotify.com/v1/search?q=${query}&type=${type}`, {
+    headers: { Authorization: `Bearer ${this.accessToken}` },
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error('Request failed!');
     })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
-        throw new Error('Request failed!');
-      })
-      .then((jsonResponse) => {
-        if (jsonResponse[type + 's']) {
-          return jsonResponse[type + 's'].items.map((item) => ({
-            id: item.id,
-            name: item.name,
-            artists: item.artists,
-            album: item.album,
-            uri: item.uri,
-          }));
-        } else {
-          return [];
-        }
-      })
-      .catch((error) => console.log(error));
-  },
+    .then((jsonResponse) => {
+      if (jsonResponse[type + 's']) {
+        return jsonResponse[type + 's'].items.map((item) => ({
+          id: item.id,
+          name: item.name,
+          artists: item.artists,
+          album: item.album,
+          uri: item.uri,
+          previewUrl: item.preview_url, // Add previewUrl property
+        }));
+      } else {
+        return [];
+      }
+    })
+    .catch((error) => console.log(error));
+},
 
   createPlaylist(playlistName) {
     return fetch('https://api.spotify.com/v1/me', {

@@ -502,19 +502,16 @@ body {
   & {
   display: flex;
   flex-flow: row wrap;
-  justify-content: start;
-  align-items: start;
-  text-align: left;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  margin-left: 50px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
   font-weight: bold;
   color: $green;
   background: $light-black;
-  border-radius: 10px;
+
   padding: $padding;
   width: auto;
-  height: 50px;
+  height: auto;
     font-size: 20px;
   }
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import Track from './Track';
 
-function SearchResults({ searchResults, onAddTrack, onPlayTrack }) {
+function SearchResults({ searchResults, onAddTrack, onPlayTrack, previewUrl }) {
   // Check if searchResults is falsy or has length 0
   if (!searchResults || searchResults.length === 0) {
     return <div>No results found.</div>;
@@ -10,7 +10,7 @@ function SearchResults({ searchResults, onAddTrack, onPlayTrack }) {
   return (
     <div>
       <h1>Search Results</h1>
-  
+
       <ol>
         {searchResults.map((track) => (
           <li key={track.id}>
@@ -18,19 +18,19 @@ function SearchResults({ searchResults, onAddTrack, onPlayTrack }) {
               name={track.name}
               artist={track.artists?.[0]?.name || ''}
               album={track.album.name}
-              duration={track.name.duration}
+              duration={track.duration}
               cover={track.album.images?.[0]?.url}
               uri={track.uri}
+              previewUrl={track.previewUrl}
               onAddTrack={onAddTrack}
               onPlayTrack={onPlayTrack}
-              isRemoval={false} // Set isRemoval prop to false since it's not a removal operation
+              isRemoval={false}
             />
           </li>
         ))}
       </ol>
     </div>
   );
-  
 }
 
 export default SearchResults;
