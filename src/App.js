@@ -10,10 +10,10 @@ import './App.scss';
 
 function App() {
   const [searchResults, setSearchResults] = useState([]);
- 
+  
   const [playlistTracks, setPlaylistTracks] = useState([]);
   const [playlistName, setPlaylistName] = useState('My Playlist');
-  
+ 
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [createdPlaylists, setCreatedPlaylists] = useState([]);
   const [currentTrack, setCurrentTrack] = useState(null);
@@ -23,7 +23,7 @@ function App() {
 
   useEffect(() => {
     Spotify.getAccessToken().then((token) => {
-      setAccessToken(token);
+        localStorage.setItem('accessToken', token);
     });
   }, []);
 
