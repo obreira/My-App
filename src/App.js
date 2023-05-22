@@ -4,21 +4,21 @@ import SearchResults from './components/SearchResults';
 import Playlist from './components/Playlist';
 import ProfileForm from './components/ProfileForm';
 import Spotify from './components/Spotify';
-import SpotifyPlayer from 'react-spotify-web-playback';
+
 import './App.scss';
 
 
 function App() {
   const [searchResults, setSearchResults] = useState([]);
-  const [playlists, setPlaylists] = useState([]);
+ 
   const [playlistTracks, setPlaylistTracks] = useState([]);
   const [playlistName, setPlaylistName] = useState('My Playlist');
-  const [profile, setProfile] = useState(null);
+  
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [createdPlaylists, setCreatedPlaylists] = useState([]);
   const [currentTrack, setCurrentTrack] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [accessToken, setAccessToken] = useState('');
+  
 
 
   useEffect(() => {
@@ -79,9 +79,7 @@ function App() {
     }
   };
 
-  const createProfile = (newProfile) => {
-    setProfile(newProfile);
-  };
+ 
 
   const savePlaylist = () => {
     Spotify.getAccessToken().then((accessToken) => {

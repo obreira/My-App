@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons';
+
 import Track from './Track';
 
 const Playlist = ({ playlistName, playlistTracks, onRemove, onRenamePlaylist, onRemoveTrack, onPlayTrack }) => {
